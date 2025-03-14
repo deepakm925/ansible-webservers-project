@@ -8,7 +8,8 @@
   tasks:
     - name: Install firewalld if not present
       ansible.builtin.package:
-        name: firewalld
+        name: 
+          - firewalld
         state: present
 
     - name: Enable firewalld
@@ -60,4 +61,3 @@
         app_root: html_demo_site-main
         server_name: "{{ ansible_facts['default_ipv4']['address'] }}"
         document_root: /var/www/html
-  
