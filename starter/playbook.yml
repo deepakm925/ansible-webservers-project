@@ -1,2 +1,42 @@
 - hosts: aws
   become: true
+  vars:
+    ports:
+      - 80
+      - 443
+
+  tasks:
+    - name: Install firewalld if not present
+      package:
+        name: firewalld
+        state: present
+
+    - name: Start and enable firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Open ports in firewalld
+      firewalld:
+        port: "{{ item }}/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+      loop: "{{ ports }}"
+
+    - block:
+        - name: Check if /var/www/html/www.companyplus.com exists
+          stat:
+            path: /var/www/html/www.companyplus.com
+          register: www_companyplus
+
+        - name: Display error if /var/www/html/www.companyplus.com does not exist
+          debug:
+            msg: "The Directory /var/www/html/www.companyplus.com does not exist or cannot be found!"
+          when: not www_companyplus.stat.exists
+
+        - name: Display message if /var/www/html/www.companyplus.com exists
+          debug:
+            msg: "The Directory /var/www/html/www.companyplus.com is found and exists"
+          when: www_companyplus.stat.exists
