@@ -1,4 +1,4 @@
-   # ..handlers/main.yml
+   # handlers/main.yml
    - name: Restart nginx package
      service:
        name: nginx
