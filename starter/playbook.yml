@@ -49,7 +49,8 @@
       failed_when: false
 
     - name: Check Nginx service status
-      ansible.builtin.command: systemctl status nginx.service
+      ansible.builtin.command:
+        cmd: systemctl status nginx.service
       when: nginx_status.failed
       register: nginx_service_status
       failed_when: false
@@ -60,7 +61,8 @@
       when: nginx_status.failed
 
     - name: Check Nginx logs
-      ansible.builtin.command: journalctl -xeu nginx.service
+      ansible.builtin.command:
+        cmd: journalctl -xeu nginx.service
       when: nginx_status.failed
       register: nginx_service_logs
       failed_when: false
@@ -88,3 +90,4 @@
         server_name: "{{ ansible_facts['default_ipv4']['address'] }}"
         document_root: /var/www/html
         webserver: nginx
+
