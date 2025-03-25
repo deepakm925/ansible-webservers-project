@@ -45,8 +45,8 @@
         name: nginx
         state: started
         enabled: true
-      failed_when: false
       register: nginx_status
+      failed_when: false
 
     - name: Check Nginx service status
       ansible.builtin.command: systemctl status nginx.service
