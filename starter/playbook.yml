@@ -40,6 +40,11 @@
             msg: "The Directory /var/www/html/www.companyplus.com is found and does exist"
           when: www_companyplus.stat.exists
 
+    - name: Ensure Nginx is installed
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
     - name: Ensure Nginx is started and enabled
       ansible.builtin.service:
         name: nginx
@@ -64,4 +69,3 @@
         server_name: "{{ ansible_facts['default_ipv4']['address'] }}"
         document_root: /var/www/html
         webserver: nginx
-
