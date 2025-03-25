@@ -1,6 +1,4 @@
-   # handlers/main.yml
-   - name: Restart nginx package
-     service:
-       name: nginx
-       state: restarted
-   
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted

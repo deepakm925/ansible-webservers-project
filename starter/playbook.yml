@@ -58,3 +58,7 @@
         server_name: "{{ ansible_facts['default_ipv4']['address'] }}"
         document_root: /var/www/html
         webserver: nginx
+        directories:
+          - /var/www/html/www.companyplus.com
+          - /var/www/html/www.companypulsar.com
+
