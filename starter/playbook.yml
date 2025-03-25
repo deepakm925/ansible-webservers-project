@@ -1,0 +1,60 @@
+- hosts: aws
+  become: true
+
+  tasks:
+    - name: Install firewalld if not present
+      ansible.builtin.package:
+        name: 
+          - firewalld
+        state: present
+
+    - name: Enable firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+      notify: Restart firewalld
+
+    - name: Open ports in firewalld
+      ansible.builtin.firewalld:
+        port: "{{ item }}/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+      loop: "{{ ports }}"
+      notify: Reload firewalld
+
+    - block:
+        - name: Check if /var/www/html/www.companyplus.com exists
+          ansible.builtin.stat:
+            path: /var/www/html/www.companyplus.com
+          register: www_companyplus
+
+        - name: Output an error if /var/www/html/www.companyplus.com does not exist
+          ansible.builtin.debug:
+            msg: "The Directory /var/www/html/www.companyplus.com does not exist or cannot be found"
+          when: not www_companyplus.stat.exists
+
+        - name: Output message if /var/www/html/www.companyplus.com exists
+          ansible.builtin.debug:
+            msg: "The Directory /var/www/html/www.companyplus.com is found and does exist"
+          when: www_companyplus.stat.exists
+
+  handlers:
+    - name: Restart firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: restarted
+
+    - name: Reload firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+
+  roles:
+    - role: webserver
+      vars:
+        app_root: html_demo_site-main
+        server_name: "{{ ansible_facts['default_ipv4']['address'] }}"
+        document_root: /var/www/html
+        webserver: nginx
