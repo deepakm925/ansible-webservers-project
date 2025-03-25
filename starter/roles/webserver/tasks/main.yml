@@ -16,8 +16,8 @@
        state: started
        enabled: true
 
-   handlers:
-     - name: Restart nginx
-       service:
-         name: nginx
-         state: restarted
+   # Move handlers to a separate file# webserver/handlers/main.yml
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
