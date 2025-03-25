@@ -40,16 +40,35 @@
             msg: "The Directory /var/www/html/www.companyplus.com is found and does exist"
           when: www_companyplus.stat.exists
 
-    - name: Ensure Nginx is installed
-      ansible.builtin.package:
-        name: nginx
-        state: present
-
     - name: Ensure Nginx is started and enabled
       ansible.builtin.service:
         name: nginx
         state: started
         enabled: true
+      failed_when: false
+      register: nginx_status
+
+    - name: Check Nginx service status
+      ansible.builtin.command: systemctl status nginx.service
+      when: nginx_status.failed
+      register: nginx_service_status
+      failed_when: false
+
+    - name: Output Nginx service status
+      ansible.builtin.debug:
+        var: nginx_service_status.stdout_lines
+      when: nginx_status.failed
+
+    - name: Check Nginx logs
+      ansible.builtin.command: journalctl -xeu nginx.service
+      when: nginx_status.failed
+      register: nginx_service_logs
+      failed_when: false
+
+    - name: Output Nginx logs
+      ansible.builtin.debug:
+        var: nginx_service_logs.stdout_lines
+      when: nginx_status.failed
 
   handlers:
     - name: Restart firewalld
